@@ -22,7 +22,7 @@ const crearRecurso = async (call, callback) => {
             });
         }
 
-        const uploadsDir = path.resolve(__dirname, '../../../../uploads');
+        const uploadsDir = path.resolve(__dirname, '../../../uploads');
         if (!fs.existsSync(uploadsDir)) {
             fs.mkdirSync(uploadsDir, { recursive: true });
         }
