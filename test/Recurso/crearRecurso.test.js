@@ -56,7 +56,6 @@ describe('Pruebas de base de datos (Mongo)', () => {
     test('Crear recurso tipo Foto exitosamente', (done) => {
         const nuevaFoto = {
             tipo: 'Foto',
-            identificador: 101,
             formato: 1,
             tamano: 2048,
             url: 'http://example.com/foto.jpg',
@@ -70,9 +69,9 @@ describe('Pruebas de base de datos (Mongo)', () => {
                 expect(err).toBeNull();
                 expect(response.exito).toBe(true);
 
-                const foto = await Foto.findOne({ identificador: 101 });
+                const foto = await Foto.findOne({ identificador: response.identificador });
                 expect(foto).not.toBeNull();
-                expect(foto.URL).toBe('http://localhost:3000/uploads/recurso_101.jpg');
+                expect(foto.URL).toBe(`http://localhost:3000/uploads/recurso_${response.identificador}.jpg`);
                 expect(foto.resolucion).toBe(1080);
 
                 done();
@@ -85,7 +84,6 @@ describe('Pruebas de base de datos (Mongo)', () => {
     test('Crear recurso tipo Audio exitosamente', (done) => {
         const nuevoAudio = {
             tipo: 'Audio',
-            identificador: 202,
             formato: 2,
             tamano: 4096,
             url: 'http://example.com/audio.mp3',
@@ -99,9 +97,9 @@ describe('Pruebas de base de datos (Mongo)', () => {
                 expect(err).toBeNull();
                 expect(response.exito).toBe(true);
 
-                const audio = await Audio.findOne({ identificador: 202 });
+                const audio = await Audio.findOne({ identificador: response.identificador });
                 expect(audio).not.toBeNull();
-                expect(audio.URL).toBe('http://localhost:3000/uploads/recurso_202.mp3');
+                expect(audio.URL).toBe(`http://localhost:3000/uploads/recurso_${response.identificador}.mp3`);
                 expect(audio.duracion).toBe(180);
 
                 done();
@@ -114,7 +112,6 @@ describe('Pruebas de base de datos (Mongo)', () => {
     test('Crear recurso tipo Video exitosamente', (done) => {
         const nuevoVideo = {
             tipo: 'Video',
-            identificador: 303,
             formato: 3,
             tamano: 8192,
             url: 'http://example.com/video.mp4',
@@ -128,9 +125,9 @@ describe('Pruebas de base de datos (Mongo)', () => {
                 expect(err).toBeNull();
                 expect(response.exito).toBe(true);
 
-                const video = await Video.findOne({ identificador: 303 });
+                const video = await Video.findOne({ identificador: response.identificador });
                 expect(video).not.toBeNull();
-                expect(video.URL).toBe('http://localhost:3000/uploads/recurso_303.mp4');
+                expect(video.URL).toBe(`http://localhost:3000/uploads/recurso_${response.identificador}.mp4`);
                 expect(video.resolucion).toBe(1920);
 
                 done();
@@ -143,7 +140,6 @@ describe('Pruebas de base de datos (Mongo)', () => {
     test('Falla al crear recurso con tipo inválido', (done) => {
         const recursoInvalido = {
             tipo: 'Documento',
-            identificador: 102,
             formato: 1,
             tamano: 500,
             url: 'http://example.com/file.docx',
@@ -166,20 +162,15 @@ describe('Pruebas de base de datos (Mongo)', () => {
 
 describe('Pruebas validar que estan en archivos', () => {
     test('Sube recurso tipo Audio con archivo real', (done) => {
-        const identificador = 1001;
         const extension = 'mp3';
-        const nombreArchivo = `recurso_${identificador}.${extension}`;
-        const rutaGuardado = path.join(__dirname, '../../uploads', nombreArchivo);
         const rutaArchivoReal = path.join(__dirname, '../Assets/reliable-safe-327618.mp3');
 
         const archivoBinario = fs.readFileSync(rutaArchivoReal);
 
         const nuevoAudio = {
             tipo: 'Audio',
-            identificador,
             formato: 3,
             tamano: archivoBinario.length,
-            url: `http://localhost:3000/uploads/${nombreArchivo}`,
             usuarioId: 99,
             duracion: 180,
             archivo: archivoBinario
@@ -190,6 +181,8 @@ describe('Pruebas validar que estan en archivos', () => {
                 expect(err).toBeNull();
                 expect(response.exito).toBe(true);
 
+                const nombreArchivo = `recurso_${response.identificador}.${extension}`;
+                const rutaGuardado = path.join(__dirname, '../../uploads', nombreArchivo);
                 const existe = fs.existsSync(rutaGuardado);
                 expect(existe).toBe(true);
 
@@ -203,20 +196,15 @@ describe('Pruebas validar que estan en archivos', () => {
     });
 
     test('Sube recurso tipo Foto con archivo real', (done) => {
-        const identificador = 1002;
         const extension = 'jpg';
-        const nombreArchivo = `recurso_${identificador}.${extension}`;
-        const rutaGuardado = path.join(__dirname, '../../uploads', nombreArchivo);
         const rutaArchivoReal = path.join(__dirname, '../Assets/LaBillieElish.jpg');
 
         const archivoBinario = fs.readFileSync(rutaArchivoReal);
 
         const nuevaFoto = {
             tipo: 'Foto',
-            identificador,
             formato: 3,
             tamano: archivoBinario.length,
-            url: `http://localhost:3000/uploads/${nombreArchivo}`,
             usuarioId: 99,
             duracion: 180,
             resolucion: 1080,
@@ -228,6 +216,8 @@ describe('Pruebas validar que estan en archivos', () => {
                 expect(err).toBeNull();
                 expect(response.exito).toBe(true);
 
+                const nombreArchivo = `recurso_${response.identificador}.${extension}`;
+                const rutaGuardado = path.join(__dirname, '../../uploads', nombreArchivo);
                 const existe = fs.existsSync(rutaGuardado);
                 expect(existe).toBe(true);
 
@@ -241,20 +231,15 @@ describe('Pruebas validar que estan en archivos', () => {
     });
 
     test('Sube recurso tipo Video con archivo real', (done) => {
-        const identificador = 1003;
         const extension = 'mp4';
-        const nombreArchivo = `recurso_${identificador}.${extension}`;
-        const rutaGuardado = path.join(__dirname, '../../uploads', nombreArchivo);
         const rutaArchivoReal = path.join(__dirname, '../Assets/file_example_MP4_480_1_5MG.mp4');
 
         const archivoBinario = fs.readFileSync(rutaArchivoReal);
 
         const nuevoVideo = {
             tipo: 'Video',
-            identificador,
             formato: 3,
             tamano: archivoBinario.length,
-            url: `http://localhost:3000/uploads/${nombreArchivo}`,
             usuarioId: 99,
             duracion: 180,
             resolucion: 1080,
@@ -267,6 +252,8 @@ describe('Pruebas validar que estan en archivos', () => {
                 expect(err).toBeNull();
                 expect(response.exito).toBe(true);
 
+                const nombreArchivo = `recurso_${response.identificador}.${extension}`;
+                const rutaGuardado = path.join(__dirname, '../../uploads', nombreArchivo);
                 const existe = fs.existsSync(rutaGuardado);
                 expect(existe).toBe(true);
 
