@@ -27,11 +27,14 @@ const crearRecurso = async (call, callback) => {
             fs.mkdirSync(uploadsDir, { recursive: true });
         }
 
+        const ultimo = await Recurso.findOne().sort({ identificador: -1 });
+        const identificador = ultimo ? ultimo.identificador + 1 : 1;
+
         let extension = tipo === 'Foto' ? 'jpg' :
             tipo === 'Audio' ? 'mp3' :
                 tipo === 'Video' ? 'mp4' : 'bin';
 
-        const nombreArchivo = `recurso_${Date.now()}.${extension}`;
+        const nombreArchivo = `recurso_${identificador}.${extension}`;
         const rutaArchivo = path.join(uploadsDir, nombreArchivo);
 
         fs.writeFileSync(rutaArchivo, archivo);
@@ -43,6 +46,7 @@ const crearRecurso = async (call, callback) => {
         switch (tipo) {
             case 'Foto':
                 recurso = new Foto({
+                    identificador,
                     formato,
                     tamano,
                     URL: url,
@@ -52,6 +56,7 @@ const crearRecurso = async (call, callback) => {
                 break;
             case 'Video':
                 recurso = new Video({
+                    identificador,
                     formato,
                     tamano,
                     URL: url,
@@ -61,6 +66,7 @@ const crearRecurso = async (call, callback) => {
                 break;
             case 'Audio':
                 recurso = new Audio({
+                    identificador,
                     formato,
                     tamano,
                     URL: url,

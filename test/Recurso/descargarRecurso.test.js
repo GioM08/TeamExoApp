@@ -53,11 +53,9 @@ afterAll(async () => {
 });
 
 describe('Descargar recurso', () => {
-    const identificador = 2001;
+    let identificador;
     const tipo = 'Foto';
     const extension = 'jpg';
-    const nombreArchivo = `recurso_${identificador}.${extension}`;
-    const rutaGuardado = path.join(__dirname, '../../uploads', nombreArchivo);
     const rutaArchivoReal = path.join(__dirname, '../Assets/LaBillieElish.jpg');
 
     beforeAll(done => {
@@ -65,10 +63,8 @@ describe('Descargar recurso', () => {
 
         const recurso = {
             tipo,
-            identificador,
             formato: 1,
             tamano: archivoBinario.length,
-            url: `http://localhost:3000/uploads/${nombreArchivo}`,
             usuarioId: 1,
             resolucion: 1080,
             archivo: archivoBinario
@@ -78,13 +74,18 @@ describe('Descargar recurso', () => {
             if (err || !response.exito) {
                 return done(err || new Error(response.mensaje));
             }
+            identificador = response.identificador;
             done();
         });
     });
 
     afterAll(() => {
-        if (fs.existsSync(rutaGuardado)) {
-            fs.unlinkSync(rutaGuardado);
+        if (identificador) {
+            const nombreArchivo = `recurso_${identificador}.${extension}`;
+            const rutaGuardado = path.join(__dirname, '../../uploads', nombreArchivo);
+            if (fs.existsSync(rutaGuardado)) {
+                fs.unlinkSync(rutaGuardado);
+            }
         }
     });
 
