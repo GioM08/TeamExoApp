@@ -8,7 +8,7 @@ const RecursoSchema = new Schema({
             unique: true
         },
         formato: {
-            type: Number,
+            type: String,
             required: true
         },
         tamano: {
@@ -30,21 +30,21 @@ const Recurso = model('Recurso', RecursoSchema);
 
 const Foto = Recurso.discriminator('Foto', new Schema({
     resolucion: {
-        type: Number,
+        type: String,
         required: true
     }
 }));
 
 const Video = Recurso.discriminator('Video', new Schema({
     resolucion: {
-        type: Number,
+        type: String,
         required: true
     }
 }));
 
 const Audio = Recurso.discriminator('Audio', new Schema({
     duracion: {
-        type: Number,
+        type: String,
         required: true
     }
 }));

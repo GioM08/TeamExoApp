@@ -6,7 +6,6 @@ const grpc = require('@grpc/grpc-js');
 const crearRecurso = async (call, callback) => {
     const {
         tipo,
-        identificador,
         formato,
         tamano,
         usuarioId,
@@ -32,7 +31,7 @@ const crearRecurso = async (call, callback) => {
             tipo === 'Audio' ? 'mp3' :
                 tipo === 'Video' ? 'mp4' : 'bin';
 
-        const nombreArchivo = `recurso_${identificador}.${extension}`;
+        const nombreArchivo = `recurso_${Date.now()}.${extension}`;
         const rutaArchivo = path.join(uploadsDir, nombreArchivo);
 
         fs.writeFileSync(rutaArchivo, archivo);
@@ -44,7 +43,6 @@ const crearRecurso = async (call, callback) => {
         switch (tipo) {
             case 'Foto':
                 recurso = new Foto({
-                    identificador,
                     formato,
                     tamano,
                     URL: url,
@@ -54,7 +52,6 @@ const crearRecurso = async (call, callback) => {
                 break;
             case 'Video':
                 recurso = new Video({
-                    identificador,
                     formato,
                     tamano,
                     URL: url,
@@ -64,7 +61,6 @@ const crearRecurso = async (call, callback) => {
                 break;
             case 'Audio':
                 recurso = new Audio({
-                    identificador,
                     formato,
                     tamano,
                     URL: url,
@@ -83,7 +79,8 @@ const crearRecurso = async (call, callback) => {
 
         return callback(null, {
             exito: true,
-            mensaje: 'Recurso creado exitosamente'
+            mensaje: 'Recurso creado exitosamente',
+            identificador: recurso.identificador
         });
     } catch (error) {
         console.error('Error al crear recurso:', error);
